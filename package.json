@@ -1,0 +1,26 @@
+{
+  "name": "piestats",
+  "version": "0.1.0",
+  "description": "The Ultimate Gaming stats bot for your Discord server",
+  "main": "bot.js",
+  "scripts": {
+    "test": "start"
+  },
+  "keywords": [
+    "stats",
+    "gaming",
+    "gaming-stats",
+    "fortnite",
+    "brawlhalla",
+    "discord",
+    "discord.js"
+  ],
+  "author": "Jesper van Daatselaar",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^11.4.2",
+    "dotenv": "^6.2.0",
+    "fnbrco.js": "^1.0.1",
+    "fortnite-client": "^2.2.0"
+  }
+}
