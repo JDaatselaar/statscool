@@ -23,6 +23,7 @@ client.on('ready', async () => {
     try {
         await api.login();
         console.log("Fortnite-Client Logged in")
+        client.user.setActivity('ftn.help | https://stats.cool', { type: 'WATCHING' });
     } catch (err) {
         console.error(`Logging into Fortnite Client failed, due to ${err}`)
     }
