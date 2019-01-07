@@ -41,6 +41,13 @@ client.on('message', async message => {
     let cmd = messageArray[0].toLowerCase();
     let args = messageArray.slice(1);
 
+    if (!message.content.startsWith(ftnP)) {
+        return
+    }
+    setTimeout(function () {
+        message.delete().catch()
+    }, 5000);
+
     if (cmd === `${ftnP}pc` || cmd === `${ftnP}xb1` || cmd === `${ftnP}ps4`) {
         let platform = cmd.split(ftnP)[1]
         let channelId = message.channel.id
@@ -52,55 +59,62 @@ client.on('message', async message => {
         let gamemode = args[2];
         let gamemodeName = gamemode
         let timewindowName = timewindow
-        await console.log(gamemode + timewindow + "before")
         if (!timewindow) {
             timewindow = "alltime"
-            gamemode = 'allGroupTypes'
-            gamemodeName = "all"
+            timewindowName = "alltime"
         } else if (timewindow === 'week' || timewindow === '7' || timewindow === 'weekly') {
             timewindow = "weekly"
             timewindowName = "the past 7 days"
         } else if (timewindow === 'alltime' || timewindow === 'alltime') {
             timewindow = 'alltime'
-        } 
-        
+            timewindowName = 'alltime'
+        } else {
+            gamemode = args[1];
+            timewindow = "alltime"
+            timewindowName = "alltime"
+        }
+
         if (!gamemode) {
             gamemode = 'allGroupTypes'
             gamemodeName = "all"
         } else if (!(gamemode.toLowerCase() === 'solo' || gamemode.toLowerCase() === 'duo' || gamemode.toLowerCase() === 'squad')) {
             return error(`${gamemode} is not a __valid__ gamemode`, channelId)
         }
-        console.log(gamemode + timewindow + "after")
         let embed = new Discord.RichEmbed()
-        .setTitle("Fortnite")
+            .setAuthor("Fortnite", icons[0])
             .setDescription(`Checking stats with **Username** ${args[0]}, **Platform** ${platform}, **Gamemode** ${gamemodeName} and **timewindow** ${timewindowName}`)
             .setColor(colors[2]);
         message.channel.send(embed).then(msg => msg.delete(20000))
         await getFtnStats(args[0], platform, gamemode, timewindow, channelId);
-        message.delete().catch();
+        setTimeout(function () {
+            message.delete().catch()
+        }, 5000);
+
     }
 
     if (cmd === `${ftnP}item`) {
         let item = args.join(" ");
         let channelId = message.channel.id;
         let embed = new Discord.RichEmbed()
-            .setTitle("Fortnite")
+            .setAuthor("Fortnite", icons[0])
             .setDescription(`Searching items with **Query** ${item}`)
             .setColor(colors[2]);
         message.channel.send(embed).then(msg => msg.delete(20000))
         await lookupItems(item, channelId)
-        message.delete().catch()
+        setTimeout(function () {
+            message.delete().catch()
+        }, 5000);
     }
 
     if (cmd === `${ftnP}shop`) {
         channelId = message.channel.id
         let embed = new Discord.RichEmbed()
-            .setTitle("Fortnite")
-            .setDescription(`Gathering all shopitems`)
+            .setAuthor("Fortnite", icons[0])
+            .setDescription(`Gathering today's shop`)
             .setColor(colors[2]);
         message.channel.send(embed).then(msg => msg.delete(20000))
-        shopItems(channelId)
-        message.delete().catch()
+        await shopItems(channelId)
+        
     }
 
     if (cmd === `${ftnP}status`) {
@@ -130,26 +144,20 @@ client.on('message', async message => {
         } else if (typeArg.toLowerCase() === 'tn' || typeArg.toLowerCase() === 'tournament' || typeArg.toLowerCase() === 'tournaments') {
             type = 'tn'
         }
-        ftnNews(type, message.channel.id)
+        await ftnNews(type, message.channel.id)
     }
 
     if (cmd === `${ftnP}help`) {
         let webEmbed = new Discord.RichEmbed()
-        .setAuthor("Help", client.user.avatarURL)
-        .setDescription("Find all commands on https://piestats.jvdaa.nl")
-        .setColor(colors[0])
-        message.channel.send(webEmbed)
-        
-        if (args[0] === 'list') {
-            let listEmbed = new Discord.RichEmbed()
             .setAuthor("Help", client.user.avatarURL)
-            .setDescription("All available commands listed here")
-        }
-    }   
+            .setDescription("Find all commands on https://stats.cool/commands")
+            .setColor(colors[0])
+        await message.channel.send(webEmbed)
+    }
 
 });
 
-async function getFtnStats(username, platform, mode, time,channel) {
+async function getFtnStats(username, platform, mode, time, channel) {
     // console.log(username, platform, channel, mode)
     let sChannel = client.channels.find(x => x.id === channel)
     let modeName = mode
@@ -239,7 +247,7 @@ async function shopItems(channel) {
         let sChannel = client.channels.find(x => x.id === channel);
         let embed = new Discord.RichEmbed()
             .setColor(colors[0])
-            .setDescription(`The itemshop of today https://fnbr.co/shop`)
+            .setDescription(`The items from today's itemshop https://fnbr.co/shop`)
             .setAuthor("Fortnite Itemshop", icons[0])
         for (let i = 0; i < shop.featured.length; i++) {
 
@@ -352,6 +360,5 @@ function isEmpty(obj) {
     }
     return true;
 }
-
 
 client.login(config.discord.token);
